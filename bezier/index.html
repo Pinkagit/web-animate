@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Complex Bezier Curve Animation with Wasm</title>
+</head>
+<body>
+  <canvas id="animationCanvas" width="800" height="600"></canvas>
+  <script src="bezier.js"></script>
+  <script>
+    const canvas = document.getElementById('animationCanvas');
+    const context = canvas.getContext('2d');
+
+    const numCurves = 5000; // 增加曲线数量
+    let t = 0;
+
+    const curves = Array.from({ length: numCurves }, () => ({
+      p0: { x: Math.random() * 800, y: Math.random() * 600 },
+      p1: { x: Math.random() * 800, y: Math.random() * 600 },
+      p2: { x: Math.random() * 800, y: Math.random() * 600 }
+    }));
+
+    let lastTimestamp = performance.now();
+    let frameCount = 0;
+
+    Module.onRuntimeInitialized = () => {
+      const getBezierPoints = Module.cwrap('getBezierPoints', null, ['number', 'number', 'number', 'number']);
+
+      function draw(timestamp) {
+        const startCalcTime = performance.now();
+
+        context.clearRect(0, 0, canvas.width, canvas.height);
+
+        const pointsPtr = Module._malloc(numCurves * 6 * 4); // 每个点两个坐标，每个坐标4个字节（float）
+        const resultPtr = Module._malloc(numCurves * 2 * 4); // 每个结果两个坐标
+
+        for (let i = 0; i < numCurves; i++) {
+          Module.HEAPF32[(pointsPtr >> 2) + i * 6] = curves[i].p0.x;
+          Module.HEAPF32[(pointsPtr >> 2) + i * 6 + 1] = curves[i].p0.y;
+          Module.HEAPF32[(pointsPtr >> 2) + i * 6 + 2] = curves[i].p1.x;
+          Module.HEAPF32[(pointsPtr >> 2) + i * 6 + 3] = curves[i].p1.y;
+          Module.HEAPF32[(pointsPtr >> 2) + i * 6 + 4] = curves[i].p2.x;
+          Module.HEAPF32[(pointsPtr >> 2) + i * 6 + 5] = curves[i].p2.y;
+        }
+
+        getBezierPoints(t, pointsPtr, numCurves, resultPtr);
+
+        for (let i = 0; i < numCurves; i++) {
+          const x = Module.HEAPF32[(resultPtr >> 2) + i * 2];
+          const y = Module.HEAPF32[(resultPtr >> 2) + i * 2 + 1];
+          
+          context.beginPath();
+          context.arc(x, y, 2, 0, 2 * Math.PI);
+          context.fill();
+        }
+
+        Module._free(pointsPtr); // 释放内存
+        Module._free(resultPtr); // 释放内存
+
+        const endCalcTime = performance.now();
+        console.log(`Wasm Calculation Time: ${endCalcTime - startCalcTime} ms`);
+
+        t += 0.01;
+        if (t > 1) t = 0;
+
+        frameCount++;
+        if (timestamp - lastTimestamp >= 1000) {
+          console.log(`Wasm FPS: ${frameCount}`);
+          frameCount = 0;
+          lastTimestamp = timestamp;
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      draw(performance.now());
+    };
+  </script>
+</body>
+</html>

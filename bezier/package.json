@@ -1,0 +1,12 @@
+{
+  "name": "bezier",
+  "version": "1.0.0",
+  "description": "",
+  "main": "bezier.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "emcc bezierCurve.cpp -o bezier.js -s EXPORTED_FUNCTIONS='[\"_getBezierPoints\", \"_malloc\", \"_free\"]' -s EXPORTED_RUNTIME_METHODS='[\"cwrap\"]'"
+  },
+  "author": "",
+  "license": "ISC"
+}
