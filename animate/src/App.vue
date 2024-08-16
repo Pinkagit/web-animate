@@ -6,9 +6,9 @@ import { RouterLink, RouterView } from 'vue-router'
   <div class="app-container">
     <nav>
       <RouterLink to="/svg">Svg</RouterLink>
-      <RouterLink to="/spine">Spine</RouterLink>
       <RouterLink to="/sprite">Sprite</RouterLink>
       <RouterLink to="/tween">Tween</RouterLink>
+      <RouterLink to="/spine">Spine</RouterLink>
       <RouterLink to="/canvas">Canvas</RouterLink>
     </nav>
     <RouterView class="view" />

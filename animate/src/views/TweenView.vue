@@ -16,6 +16,7 @@ onMounted(() => {
     borderRadius: "50%",
     border: "5px solid grey",
     duration: 2,
+    scale: 0.5,
     ease: "bounce",
     id: "box01"
   }).to(".box02", {
@@ -26,11 +27,11 @@ onMounted(() => {
     rotate: "135",
     duration: 1,
     id: "box02"
-  })
-  // GSDevTools.create({
-  //   container: container.value,
-  //   animation: tl
-  // });
+  }, "-=2")
+  GSDevTools.create({
+    container: container.value,
+    animation: tl
+  });
 })
 
 const play = () => {

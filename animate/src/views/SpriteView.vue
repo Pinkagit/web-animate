@@ -2,8 +2,9 @@
   <div class="container">
     <div 
       class="frame-animation" 
-      :class="{ 'animate': isAnimating }">
+      :class="{ 'animate': isAnimating, 'linear': isAnimating && isLinear }">
     </div>
+    <button @click="toggleSpeed">{{ isLinear ? 'Steps' : 'Linear' }} Speed</button>
     <button @click="toggleAnimation">{{ isAnimating ? 'Pause' : 'Play' }} Animation</button>
   </div>
 </template>
@@ -12,10 +13,14 @@
 import { ref } from 'vue';
 
 const isAnimating = ref(false);
+const isLinear = ref(false);
 
 const toggleAnimation = () => {
   isAnimating.value = !isAnimating.value;
 };
+const toggleSpeed = () => {
+  isLinear.value = !isLinear.value;
+}
 </script>
 
 <style scoped>
@@ -56,6 +61,9 @@ const toggleAnimation = () => {
 .frame-animation.animate {
   animation: play-frames 1s steps(8) infinite;
 }
+.frame-animation.linear {
+  animation: play-frames 3s linear infinite;
+}
 
 @keyframes play-frames {
   from {
@@ -70,6 +78,9 @@ button {
   padding: 10px 20px;
   font-size: 16px;
   margin-top: 20px;
+}
+button:not(:last-child) {
+  margin-right: 15px;
 }
 </style>
 
