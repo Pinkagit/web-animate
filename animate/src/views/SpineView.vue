@@ -76,7 +76,7 @@ onMounted(async () => {
   debugRenderer.drawBoundingBoxes = true;    // 绘制包围盒
   debugRenderer.drawClipping = true;   // 用于绘制裁剪区域
   debugRenderer.drawRegionAttachments = true;    // 用于绘制区域附件。
-  spineBoy.spine.debug = debugRenderer   // debug
+  // spineBoy.spine.debug = debugRenderer   // debug
 
   
   // Add scene and character to the stage.
